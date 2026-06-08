@@ -1,6 +1,8 @@
-import http from "http";
+import express from "express";
 
 const PORT = 8000;
+
+const app = express();
 
 const users = [
   { id: 1, name: "budi" },
@@ -8,22 +10,43 @@ const users = [
   { id: 3, name: "siti" },
 ];
 
-const server = http.createServer((req, res) => {
-  if (req.url === "/api" && req.method === "GET") {
-    res.writeHead(200);
-    res.write("Welcome to my API");
-    res.end();
-  } else if (req.url === "/users" && req.method === "GET") {
-    res.writeHead(200, { "content-type": "application/json" });
-    res.write(JSON.stringify(users));
-    res.end();
-  } else {
-    res.writeHead(404);
-    res.write("Route not found");
-    res.end();
-  }
+app.use(express.json()); // agar bisa menerima req.body
+
+app.get("/api", (req, res) => {
+  res.status(200).send("Welcome to my API");
 });
 
-server.listen(PORT, () => {
+app.get("/users", (req, res) => {
+  res.status(200).send(users);
+});
+
+app.get("/users/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const user = users.find((user) => user.id === id);
+
+  if (!user) {
+    return res.status(404).send({ message: "User not found" });
+  }
+
+  res.status(200).send(user);
+});
+
+app.post("/users", (req, res) => {
+  const latestId = users[users.length - 1].id;
+
+  users.push({
+    id: latestId + 1,
+    name: req.body.name,
+  });
+
+  res.status(200).send("Create user success");
+});
+
+app.use((req, res) => res.status(404).send({ message: "route not found" }));
+
+app.listen(PORT, () => {
   console.log(`Server running on port : ${PORT}`);
 });
+
+// pigiri3887@googxs.com
