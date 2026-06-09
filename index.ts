@@ -1,49 +1,20 @@
 import express from "express";
+import { userRoutes } from "./routes/user.routes";
+import { globalError, notFoundError } from "./utils/errors";
 
 const PORT = 8000;
 
 const app = express();
 
-const users = [
-  { id: 1, name: "budi" },
-  { id: 2, name: "joko" },
-  { id: 3, name: "siti" },
-];
-
+// configs
 app.use(express.json()); // agar bisa menerima req.body
 
-app.get("/api", (req, res) => {
-  res.status(200).send("Welcome to my API");
-});
+// entry point
+app.use("/users", userRoutes);
 
-app.get("/users", (req, res) => {
-  res.status(200).send(users);
-});
-
-app.get("/users/:id", (req, res) => {
-  const id = Number(req.params.id);
-
-  const user = users.find((user) => user.id === id);
-
-  if (!user) {
-    return res.status(404).send({ message: "User not found" });
-  }
-
-  res.status(200).send(user);
-});
-
-app.post("/users", (req, res) => {
-  const latestId = users[users.length - 1].id;
-
-  users.push({
-    id: latestId + 1,
-    name: req.body.name,
-  });
-
-  res.status(200).send("Create user success");
-});
-
-app.use((req, res) => res.status(404).send({ message: "route not found" }));
+// errors
+app.use(globalError);
+app.use(notFoundError);
 
 app.listen(PORT, () => {
   console.log(`Server running on port : ${PORT}`);
