@@ -1,6 +1,6 @@
 import express from "express";
-import { userRoutes } from "./routes/user.routes";
-import { globalError, notFoundError } from "./utils/errors";
+import { userRoutes } from "./routes/user.routes.js";
+import { globalError, notFoundError } from "./utils/errors.js";
 
 const PORT = 8000;
 
